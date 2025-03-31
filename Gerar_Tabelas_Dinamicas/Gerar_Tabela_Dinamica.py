@@ -6,10 +6,13 @@ import plotly.express as px
 def load_data(file):
     # Verifica se o arquivo é CSV
     if file.name.endswith('.csv'):
-        return pd.read_csv(file)
+        try:
+            return pd.read_csv(file, encoding='utf-8')
+        except UnicodeDecodeError:
+            return pd.read_csv(file, encoding='latin1')
     # Verifica se o arquivo é Excel
     elif file.name.endswith('.xlsx'):
-        return pd.read_excel(file)
+        return pd.read_excel(file, engine='openpyxl')
     # Exibe uma mensagem de erro se o formato do arquivo não for suportado
     else:
         st.error("Formato de arquivo não suportado")
@@ -18,7 +21,7 @@ def load_data(file):
 # Carregar os arquivos de dados
 st.title("Gerador de Tabela Dinâmica")
 # Permite ao usuário fazer upload de múltiplos arquivos CSV ou Excel
-uploaded_files = st.file_uploader("Escolha os arquivos de dados", type=["csv", "xlsx"], accept_multiple_files=True)
+uploaded_files = st.file_uploader("Escolha os arquivos de dados para gerar a Tabela Dinâmica e os Gráficos 📊 \n\n" "📝 Observação: Você poderá selecionar mais de um arquivo, desde que eles tenham o mesmo formato de colunas. ", type=["csv", "xlsx"], accept_multiple_files=True)
 
 if uploaded_files:
     data_frames = []
